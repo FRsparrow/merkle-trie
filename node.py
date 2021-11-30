@@ -1,4 +1,4 @@
-from dic import dic_size, dic
+from dic import dic_size, char_to_index
 
 
 class Node:
@@ -9,11 +9,31 @@ class Node:
     def __hash__(self):
         pass
 
-    def get_child(self, c):
-        return self.children[]
+    def set_value(self, value):
+        self.value = value
 
-    def serialize(self):
-        pass
+    def get_child(self, c):
+        return self.children[char_to_index(c)]
+
+    def add_child(self, key, value):
+        if not key:
+            return
+
+        par = self
+        for c in key:
+            idx = char_to_index(c)
+            par.children[idx] = Node()
+            par = par.children[idx]
+
+        par.set_value(value)
 
     def is_value_node(self):
         return self.value is not None
+
+
+def serialize(node):
+    return node
+
+
+def decode_node(buf):
+    return buf

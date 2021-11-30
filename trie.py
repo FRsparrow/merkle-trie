@@ -1,4 +1,4 @@
-from node import Node
+from node import Node, serialize, decode_node
 
 
 class Trie:
@@ -14,30 +14,66 @@ class Trie:
         node = self.root
         while key:
             c = key[0]
-            if node.children[c] !=
+            cld = node.get_child(c)
+            if cld:
+                node = cld
+                key = key[1:]
+            else:
+                return node, key
+
+        return node, key
 
     def get(self, key):
-        node = self.root
-        while True:
-            if node is None:
-                return None, False
+        node, key = self._locate(key)
+        if key or not node.is_value_node():
+            return None, False
+        else:
+            return node.value, True
 
-            if len(key) >= 1:
-                c = key[0]
-                node = node.children[c]
+    def put(self, key, value):
+        node, key = self._locate(key)
+        if key:
+            node.add_child(key, value)
+        else:
+            node.set_value(value)
+
+    def prove(self, key):
+        node = self.root
+        proof = {hash(node): serialize(node)}
+
+        while key:
+            c = key[0]
+            cld = node.get_child(c)
+            if cld:
+                node = cld
                 key = key[1:]
-            elif node.is_value_node():
-                return node.value, True
             else:
                 return None, False
 
-    def put(self, key, value):
-        node = self.root
+        if node.is_value_node():
+            return proof, True
+        else:
+            return None, False
 
-
-    def prove(self, key):
-        pass
+        # while key:
+        #     c = key[0]
+        #     cld = node.get_child(c)
+        #     if cld:
+        #         proof[hash(node)] = serialize(node)
+        #         node = cld
+        #         key = key[1:]
+        #     else:
+        #         return None, False
+        #
+        # if node.is_value_node():
+        #     proof[hash(node)] = serialize(node)
+        #     return proof, True
+        # else:
+        #     return None, False
 
 
 def verify_proof(root_hash, key, proof):
-    pass
+    want_hash = root_hash
+    buf = proof[want_hash]
+    n = decode_node(buf)
+    return n.get(key)
