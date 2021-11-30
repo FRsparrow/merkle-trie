@@ -1,4 +1,4 @@
-from trie import Trie
+from trie import Trie, verify_proof
 import unittest
 
 
@@ -58,40 +58,21 @@ class MyTest(unittest.TestCase):
         trie = Trie({"a": "value0", "b": "value1", "ab": "value2", "ac": "value3"})
         not_exist_key = "ad"
         _, ok = trie.prove(not_exist_key)
-        self.assertFalse(ok)
+        self.assertFalse(ok)    # there exists no such key
 
         key = "ab"
         proof, ok = trie.prove(key)
         self.assertTrue(ok)
 
         root_hash = hash(trie)
-        val, ok =
-        key := []
-        byte
-        {1, 2, 3}
-        proof, ok := tr.Prove(key)
-        require.
-        True(t, ok)
 
-        rootHash := tr.Hash()
+        value2, ok = verify_proof(root_hash, key, proof)
+        self.assertTrue(ok)
+        self.assertEqual(value2, "value2")
 
-        // verify
-        the
-        proof
-        with the root hash, the key in question and its proof
-        val, err := VerifyProof(rootHash, key, proof)
-        require.NoError(t, err)
+        trie.put("acd", "value4")
+        proof, ok = trie.prove(key)
+        self.assertTrue(ok)
 
-        // when
-        the
-        verification
-        has
-        passed, it
-        should
-        return the
-        correct
-        value
-        for the key
-            require.Equal(t, []
-            byte("hello"), val)
-
+        _, ok = verify_proof(root_hash, key, proof)
+        self.assertFalse(ok)    # value has been changed
