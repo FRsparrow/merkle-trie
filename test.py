@@ -77,4 +77,4 @@ class MyTest(unittest.TestCase):
         self.assertTrue(ok)
 
         _, ok = verify_proof(root_hash, key, proof)
-        self.assertFalse(ok)    # value has been changed
+        self.assertFalse(ok)    # root hash has been changed

@@ -5,7 +5,7 @@ class Node:
     def __init__(self, value=None):
         self.children = [None] * dic_size
         self.value = value
-        self.flags = NodeFlag()
+        self.flags = NodeFlag() # hash cache and dirty flag
 
     def __hash__(self):
         if self.hash_valid():
@@ -21,6 +21,7 @@ class Node:
     def get_child(self, c):
         return self.children[char_to_index(c)]
 
+    # key length > 1, add all nodes at one time
     def add_child(self, key, value):
         if not key:
             return
@@ -61,6 +62,8 @@ class NodeFlag:
         return self.h and not self.dirty
 
 
+# (idx,cld_hash,)*value
+# '1,5354039371319016526,2,6770954456685134596,value0'
 def serialize(node):
     enc = ""
     for idx, cld in enumerate(node.children):

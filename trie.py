@@ -11,6 +11,7 @@ class Trie:
     def __hash__(self):
         return hash(self.root)
 
+    # follow key until no match, return the last unmatched node and rest key
     def _locate(self, key):
         node = self.root
         while key:
@@ -39,6 +40,7 @@ class Trie:
         else:
             node.set_value(value)
 
+        # hashes of node on path changed
         self.set_dirty_on_path(path)
 
     def set_dirty_on_path(self, path):
@@ -60,34 +62,14 @@ class Trie:
                 proof_db[str(hash(node))] = serialize(node)
                 node = cld
                 key = key[1:]
-            else:
+            else:   # there's no such key
                 return None, False
 
         if node.is_value_node():
             proof_db[str(hash(node))] = serialize(node)
             return proof_db, True
-        else:
+        else:   # there's no such key
             return None, False
-
-        # while key:
-        #     c = key[0]
-        #     cld = node.get_child(c)
-        #     if cld:
-        #         proof[hash(node)] = serialize(node)
-        #         node = cld
-        #         key = key[1:]
-        #     else:
-        #         return None, False
-        #
-        # if node.is_value_node():
-        #     proof[hash(node)] = serialize(node)
-        #     return proof, True
-        # else:
-        #     return None, False
-
-    # def resolve_hash(self, hash_node):
-    #     h = hash_node.h
-    #     return self.db.get(hash_node)
 
 
 def verify_proof(root_hash, key, proof):
@@ -102,7 +84,7 @@ def verify_proof(root_hash, key, proof):
                 key = key[1:]
             elif n.is_value_node():
                 return n.value, True
-            else:
+            else:   # there's no such key
                 return None, False
-        else:
+        else:   # proof failed
             return None, False
